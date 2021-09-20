@@ -16,11 +16,11 @@ import {
 } from './style/profileRightbar'
 import { useState, useEffect } from "react"
 import { Link } from 'react-router-dom'
-import axios from "axios"
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
 import { useStateValue } from '../../context/AuthContext'
+import { axiosInstace} from "../../ApiCall"
 
 
 export default function ProfileRightbar({ user }) {
@@ -31,7 +31,7 @@ export default function ProfileRightbar({ user }) {
     useEffect(() => {
         setFollow(currentUser.followings.includes(user._id))
         const FetchFollowing = async () => {
-            const res = await axios.get(`/users/friend/${user._id}`)
+            const res = await  axiosInstace.get(`/users/friend/${user._id}`)
             setFollowing(res.data);
         }
         FetchFollowing()
@@ -45,11 +45,11 @@ export default function ProfileRightbar({ user }) {
     const followHandler = async () => {
         try {
             if (Follow) {
-                await axios.put(`/users/${user._id}/unfollow`, { userId: currentUser._id })
+                await  axiosInstace.put(`/users/${user._id}/unfollow`, { userId: currentUser._id })
                 dispatch({ type: "UNFOLLOW", payload: user._id })
 
             } else {
-                await axios.put(`/users/${user._id}/follow`, { userId: currentUser._id });
+                await  axiosInstace.put(`/users/${user._id}/follow`, { userId: currentUser._id });
                 dispatch({ type: "FOLLOW", payload: user._id });
             }
             setFollow(!Follow)
