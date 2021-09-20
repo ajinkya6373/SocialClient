@@ -13,6 +13,9 @@ export const  Wrapper = styled.div`
 width: 70%;
 height: 70%;
 display: flex;
+@media (max-width:850px) {
+    flex-direction: column;
+    }
 `
 export const LeftConatainer = styled.div`
 flex: 1;
@@ -26,10 +29,18 @@ font-size: 50px;
 font-weight: 800;
 color: #1775ee;
 margin-bottom: 10px;
+@media (max-width:850px) {
+    text-align: center;
+    font-size: 40px;
+    }
 
 `
 export const LoginDescription = styled.span`
 font-size: 24px;
+@media (max-width:850px) {
+    text-align: center;
+    font-size: 15px;
+    }
 `
 export const  RightContainar = styled(LeftConatainer)``
 export const LoginBox = styled.form`
@@ -71,7 +82,7 @@ export const ForgotPass= styled.span`
 `
 export const RegisterButton= styled.button`
     width: 60%;
-    align-self: center;
+    margin-left:20%;
     height: 50px;
     border-radius: 10px;
     border: none;
@@ -79,6 +90,8 @@ export const RegisterButton= styled.button`
     color: white;
     font-size: 20px;
     font-weight: 500;
-    margin-left:20%;
     cursor: pointer;
+    @media (max-width:850px) {
+        font-size: 15px;
+    }
 `
