@@ -23,12 +23,12 @@ import { useParams } from "react-router";
 import SettingsIcon from '@material-ui/icons/Settings';
 import PhotoCameraTwoToneIcon from '@material-ui/icons/PhotoCameraTwoTone';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-import axios from 'axios';
 import { Button } from "@material-ui/core";
 import {
     uploadProfile,
     updateProfile,
-    fetchUserByUsername
+    fetchUserByUsername,
+    axiosInstace
 } from "../../ApiCall"
 
 export default function ProfilePage() {
@@ -49,7 +49,7 @@ export default function ProfilePage() {
         }
             uploadProfile(Profiledata,fileName,dispatch)
             updateProfile(currentUser._id,data)
-            await axios.post('/deleteImage',{postName:currentUser?.profilePicture})
+            await axiosInstace.post('/deleteImage',{postName:currentUser?.profilePicture})
     }
 
     useEffect(() => {
