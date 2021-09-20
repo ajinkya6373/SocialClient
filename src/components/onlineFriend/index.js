@@ -8,8 +8,7 @@ import {
   Name,
 } from './style/onlineFriend'
 import { useEffect, useState } from 'react';
-import { fetchFriends } from "../../ApiCall"
-import axios from 'axios';
+import { fetchFriends , axiosInstace} from "../../ApiCall"
 import { useStateValue } from '../../context/AuthContext';
 
 export default function OnlineFriend({ onlineUsers, setCurrentChat }) {
@@ -30,13 +29,13 @@ export default function OnlineFriend({ onlineUsers, setCurrentChat }) {
   }, [friends, onlineUsers]);
   const handleClick = async (friend) => {
     try {
-      const res = await axios.get(
+      const res = await  axiosInstace.get(
         `/conv/find/${user?._id}/${friend?._id}`
 
       );
       setCurrentChat(res.data);
       if (res.data === null) {
-        const res = await axios.post(`/conv/${friend?._id}`, { senderId: user?._id })
+        const res = await  axiosInstace.post(`/conv/${friend?._id}`, { senderId: user?._id })
         setCurrentChat(res.data);
       }
 
