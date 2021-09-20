@@ -39,9 +39,7 @@ export default function MessengerPage() {
 
     //initialization of socket and get message from socket 
     useEffect(() => {
-        socket.current = io("https://socialapi1.herokuapp.com/",{
-             withCredentials: true,
-        })
+        socket.current = io("https://socialapi1.herokuapp.com/")
         socket.current.on("getMessage", (data) => {
             setArrivalMessage({
                 sender: data.senderId,
