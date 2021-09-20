@@ -32,13 +32,12 @@ import { format } from 'timeago.js';
 import { Link } from "react-router-dom"
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
-import axios from "axios"
 import {
     fetchUserById,
     LikePost,
     DeletePost,
     UpdatePost,
-    // RemoveImage
+    axiosInstace
 } from "../../ApiCall"
 
 export default function Post({ post }) {
@@ -66,7 +65,7 @@ export default function Post({ post }) {
     }
 
     const deletePost =  async() => {
-        await axios.post('/deleteImage',{postName:post.img})
+        await  axiosInstace.post('/deleteImage',{postName:post.img})
         DeletePost(post._id,currentUser._id ,dispatch,post.img)
         window.location.reload();
     }
