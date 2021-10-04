@@ -20,7 +20,7 @@ import { Search, Person, Chat, Notifications, Cancel } from "@material-ui/icons"
 import { Link } from "react-router-dom"
 import { useStateValue } from "../../context/AuthContext"
 import { SearchContainer } from "../../components"
-import axios from "axios"
+import { axiosInstace} from "../../ApiCall";
 import { useState } from "react";
 
 export default function Topbar() {
@@ -32,7 +32,7 @@ export default function Topbar() {
         setSearchInput(e)
         try {
 
-            let { data, status, message } = await axios.post('/users/search', { name: searchInput })
+            let { data, status, message } = await axiosInstace.post('/users/search', { name: searchInput })
             setSearchInput('')
             console.log(message)
             if (status === 200) {
