@@ -4,19 +4,9 @@ export const Title = styled.h4`
     font-size: 18px;
     font-weight: 500;
     margin-bottom: 10px;
-    @media (max-width:570px) {
-        font-size:12px;
-      }
-      @media (max-width:390px) {
-        display:none;
-      }
 `
 export const  Info = styled.div`
 margin-bottom: 30px;
-@media (max-width:390px) {
-    display:none;
-  }
-
 `
 export const  InfoItem = styled.div`
 margin-bottom: 10px;
@@ -25,16 +15,9 @@ export const InfoKey = styled.span`
 font-weight: 500;
 margin-right: 15px;
 color: #555;
-@media (max-width:570px) {
-    margin-right: 2px;
-    font-size:11px;
-  }
 `
 export const InfoValue = styled.span`
-font-weight: 300;
-@media (max-width:570px) {
-    font-size:11px;
-  }
+font-weight: 300
 `
 export const Followings = styled.div`
 display: flex;
@@ -52,16 +35,8 @@ width: 100px;
 height: 100px;
 object-fit: cover;
 border-radius: 5px;
-@media (max-width:520px) {
-    width: 50px;
-    height: 50px;
-  }
 `
-export const Name = styled.span`
-@media (max-width:520px) {
-    font-size: 11px;
-  }
-`
+export const Name = styled.span``
 export const LogOutButton = styled.button`
 display:flex;
 align-items:center;
@@ -72,9 +47,6 @@ border-radius: 5px;
 cursor: pointer;
 padding:2px 0px;
 margin-bottom:10px;
-@media (max-width:520px) {
-    flex-direction: column;
-  }
 `
 export const Icon = styled.span`
 margin-top:3px;

@@ -7,9 +7,6 @@ export const Friends = styled.div`
     font-weight: 500;
     cursor: pointer;
     margin-top: 10px;
-    @media (max-width: 768px) {
-        flex-direction:column;
-    }
 `
 export const ImgConatainer = styled.div`
     position: relative;

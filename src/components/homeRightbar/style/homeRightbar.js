@@ -1,6 +1,6 @@
 import styled  from "styled-components/macro";
 export const BirthdayContainer = styled.div`
-    display: flex;
+    // display: flex;
     align-items: center;
     @media (max-width: 768px) {
         display: none;

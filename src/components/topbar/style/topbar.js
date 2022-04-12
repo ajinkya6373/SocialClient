@@ -3,7 +3,7 @@ import styled from "styled-components/macro"
 export const TopbarContainer = styled.div`
     height: 50px;
     width: 100%;
-    background-color: #1877f2;
+    background-color: #2a384b;
     display: flex;
     align-items: center;
     position: sticky;
@@ -106,10 +106,12 @@ export const Topbarlink = styled.span`
 margin-right: 10px;
 font-size: 14px;
 cursor: pointer;
+
 `
 
 export const TobarIcons = styled.div`
 display: flex;
+
 `
 
 export const TobarIconItem = styled.div`
@@ -119,6 +121,8 @@ export const TobarIconItem = styled.div`
     @media (max-width:580px) {
         margin-right: 6px;
       }
+
+
 `
 
 export const TobarIconBadge = styled.span`
@@ -134,6 +138,7 @@ export const TobarIconBadge = styled.span`
     align-items: center;
     justify-content: center;
     font-size: 12px;
+
 ` 
 
 export const Image = styled.img`

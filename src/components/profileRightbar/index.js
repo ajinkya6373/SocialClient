@@ -16,25 +16,35 @@ import {
 } from './style/profileRightbar'
 import { useState, useEffect } from "react"
 import { Link } from 'react-router-dom'
+import { axiosInstance} from "../../ApiCall"
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
 import { useStateValue } from '../../context/AuthContext'
-import { axiosInstace} from "../../ApiCall"
-
+import Button from '@mui/material/Button';
+import { SearchContainer ,ModalCustom} from "../../components"
 
 export default function ProfileRightbar({ user }) {
     const [{ user: currentUser }, dispatch] = useStateValue()
-    const PF = process.env.REACT_APP_PUBLIC_FOLDER
-    const [following, setFollowing] = useState([])
+    const [following, setFollowing] = useState([]);
+    const [followers, setFollowers] = useState([])
     const [Follow, setFollow] = useState(false)
+    const [open, setOpen] = useState(false);
+    let [flagModal, setFlagModal] = useState('following')
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
     useEffect(() => {
         setFollow(currentUser.followings.includes(user._id))
         const FetchFollowing = async () => {
-            const res = await  axiosInstace.get(`/users/friend/${user._id}`)
+            const res = await axiosInstance.get(`/users/friend/${user._id}`)
             setFollowing(res.data);
         }
+        const FetchFollowers = async () => {
+            const res = await axiosInstance.get(`/users/followers/${user._id}`)
+            setFollowers(res.data);
+        }
         FetchFollowing()
+        FetchFollowers()
     }, [user._id, currentUser.followings])
 
     const clickHandle = () => {
@@ -45,11 +55,11 @@ export default function ProfileRightbar({ user }) {
     const followHandler = async () => {
         try {
             if (Follow) {
-                await  axiosInstace.put(`/users/${user._id}/unfollow`, { userId: currentUser._id })
+                await axiosInstance.put(`/users/${user._id}/unfollow`, { userId: currentUser._id })
                 dispatch({ type: "UNFOLLOW", payload: user._id })
 
             } else {
-                await  axiosInstace.put(`/users/${user._id}/follow`, { userId: currentUser._id });
+                await axiosInstance.put(`/users/${user._id}/follow`, { userId: currentUser._id });
                 dispatch({ type: "FOLLOW", payload: user._id });
             }
             setFollow(!Follow)
@@ -58,6 +68,7 @@ export default function ProfileRightbar({ user }) {
             console.log(err)
         }
     }
+
 
     return (
         <>
@@ -89,26 +100,29 @@ export default function ProfileRightbar({ user }) {
                     <InfoKey>Relationship:</InfoKey>
                     <InfoValue>{user.relationship === 1 ? "single" : user.relationship === 2 ? "Married" : '-'}</InfoValue>
                 </InfoItem>
+                <span onClick={() => setFlagModal('following')}>
+                    <Button onClick={handleOpen} >following {following.length}</Button>
+                </span>
+                <Info onClick={() => setFlagModal("followers")}>
+                    <Button onClick={handleOpen} >followers {followers.length}</Button>
+                </Info>
             </Info>
-            <Title>{user.username}'s friends</Title>
-            <Followings>
+            <ModalCustom onClose={handleClose} open={open} profileModel>
                 {
-                    following.map((i) => (
-                        <Link to={`/profile/${i.username}`} style={{ textDecoration: "none" }} key={i._id}>
-                            <Following >
-                                <Image src={
-                                    i.profilePicture
-                                        ? PF + i.profilePicture
-                                        : PF + "person/noAvatar.png"
-                                } />
-                                <Name>{i.username}</Name>
-                            </Following>
-                        </Link>
-                    ))
-
+                   <>
+                   
+                        {flagModal == 'following' ? following.map((i) => (
+                            <Link to={`/profile/${i.username}`} style={{ textDecoration: "none" }} key={i._id}>
+                                <SearchContainer searchData={i} />
+                            </Link>
+                        )) : followers.map((i) => (
+                            <Link to={`/profile/${i.username}`} style={{ textDecoration: "none" }} key={i._id}>
+                                <SearchContainer searchData={i} />
+                            </Link>
+                        ))}
+                </>
                 }
-
-            </Followings>
+            </ModalCustom>
         </>
     )
 }

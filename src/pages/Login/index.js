@@ -19,15 +19,17 @@ import { CircularProgress } from "@material-ui/core";
 import { Link } from "react-router-dom"
 import ErrorIcon from '@material-ui/icons/Error';
 import {loginCall} from "../../ApiCall"
-
+import { useHistory } from "react-router-dom";
 export default function LoginPage() {
+    const history = useHistory();
     const email = useRef();
     const password = useRef();
-    const [{ isFetching, error }, dispatch] = useStateValue()
+    const [{ isFetching, error}, dispatch] = useStateValue()
 
     const handleClick = (e) => {
         e.preventDefault();
         loginCall({ email: email.current.value, password: password.current.value }, dispatch)
+        history.push("/", { from: "LoginPage" })
     }
 
     return (
@@ -52,6 +54,7 @@ export default function LoginPage() {
                             required
                             ref={password}
                             // minLength="6"
+                            autocomplete="on"
                             type="password" />
                         <LoginButton disabled={isFetching} type="submit">
                             {isFetching ?

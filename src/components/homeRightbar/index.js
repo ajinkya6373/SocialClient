@@ -1,9 +1,8 @@
 
 import {
-    BirthdayContainer,
-    BirthdayImage,
-    BirthdayText,
-    RightbarAd,
+    // BirthdayContainer,
+    // BirthdayImage,
+    // BirthdayText,
     RightbarTitle,
     RightbarFriendList
 
@@ -13,13 +12,12 @@ import Online from "../online"
 import { Users} from "../../dummyData"
 export default function HomeRightbar() {
     return <>
-        <BirthdayContainer>
+        {/* <BirthdayContainer>
             <BirthdayImage src="assets/gift.png"/>
             <BirthdayText>
             <b>Soham</b> and <b>3 other friends</b> have a birhday today.
             </BirthdayText>
-        </BirthdayContainer>
-        <RightbarAd src="assets/ad.png"/>
+        </BirthdayContainer> */}
         <RightbarTitle>Online Friends</RightbarTitle>
         <RightbarFriendList>
           {

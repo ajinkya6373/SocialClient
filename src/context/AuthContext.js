@@ -6,9 +6,10 @@ const INITIAL_STATE = {
     isFetching: false,
     error: false,
     deletePost:false,
-    post:[],
-
-  
+    addingPost:false,
+    settingTimeline:false,
+    updatingPost:false,
+    timeLine:[]
   };
 
 export const AuthContext = createContext();

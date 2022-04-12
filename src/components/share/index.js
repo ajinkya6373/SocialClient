@@ -20,50 +20,62 @@ import {
 import { PermMedia, Label, Room, EmojiEmotions,Cancel} from "@material-ui/icons"
 import { useStateValue } from "../../context/AuthContext"
 import { useState} from "react";
-import{ uploadPost,newPost} from "../../ApiCall"
 
+import{newPost} from "../../ApiCall"
 export default function Share() {
-    const [{user}] = useStateValue()
-    const [file,setFile] = useState(false)
+    const [{user},dispatch] = useStateValue()
+    const [fileInputState, setFileInputState] = useState('');
+    const [previewSource, setPreviewSource] = useState('');
     const [desc,setDesc] = useState('')
     const PF = process.env.REACT_APP_PUBLIC_FOLDER;
-    const Invalid = desc.length<5 && file === false;
+    const Invalid = fileInputState === '';
+
+    const handleFileInputChange = (e) => {
+        const file = e.target.files[0];
+        previewFile(file);
+        setFileInputState(e.target.value);
+    };
+
+    const previewFile = (file) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onloadend = () => {
+            setPreviewSource(reader.result);
+        };
+    };
     const sumbitHandler = async(e)=>{
         e.preventDefault()
         const newPostdata ={
             userId:user._id,
             desc:desc,
         };
-        if(file){
-            const data = new FormData();
-            const fileName = "post/" + Date.now() + file.name;
-            data.append("name",fileName)
-            data.append("file",file);
-            newPostdata.img = fileName;
-            uploadPost(data)
-
+        if(previewSource){
+            newPostdata.data = previewSource;
         }
-        newPost(newPostdata)
-
+        newPost(newPostdata,dispatch);
     }
-
+    const clearStates =()=>{
+        setFileInputState('');
+        setPreviewSource('')
+        setDesc('')
+    }
     return (
         <ShareContainer>
             <Wrapper>
                 <ShareTop>
                     <Image src={
                         user.profilePicture
-                       ? PF+user.profilePicture
+                       ? user.profilePicture.url
                        : PF+"/person/noAvatar.png"
                     } />
-                    <Input placeholder={`${user.username} Say something`} onChange={(e)=>setDesc(e.target.value)} />
+                    <Input placeholder={`${user.username} Say something`} onChange={(e)=>setDesc(e.target.value)}  value={desc}/>
                 </ShareTop>
                 <Divider />
                 {
-                    file &&(
+                    previewSource &&(
                         <ShareImgContainer>
-                            <ShareImg src={URL.createObjectURL(file)}/>
-                            <ShareCancelImg onClick={()=>setFile(false)}><Cancel/></ShareCancelImg>
+                            <ShareImg src={previewSource}/>
+                            <ShareCancelImg onClick={clearStates}><Cancel/></ShareCancelImg>
                         </ShareImgContainer>
                     )
                 }
@@ -77,20 +89,10 @@ export default function Share() {
                             style={{display:"none"}} 
                             type="file" 
                             id = "file" 
-                            onChange={(e)=>setFile(e.target.files[0])}
+                            onChange={handleFileInputChange}
+                            value={fileInputState}
                             accept=".png,.jpeg,.jpg"/>
-                        <ShareOption>
-                            <Icon color="blue"><Label/></Icon>
-                            <Text>Tag</Text>
-                        </ShareOption>
-                        <ShareOption>
-                            <Icon color="green"><Room/></Icon>
-                            <Text>Location</Text>
-                        </ShareOption>
-                        <ShareOption>
-                            <Icon color="goldenrod"><EmojiEmotions/></Icon>
-                            <Text>Feelings</Text>
-                        </ShareOption>
+    
                     </ShareOptions>
                     <ShareButton type="submit" disabled={Invalid}>Share</ShareButton>
                 </ShareBottom>

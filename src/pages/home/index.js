@@ -9,7 +9,7 @@ export default function Homepage() {
     return <>
          <Topbar/>
          <HomepageContainer>
-            <Sidebar/>
+            {/* <Sidebar/> */}
             <Feed/>
             <Rightbar/>
          </HomepageContainer>

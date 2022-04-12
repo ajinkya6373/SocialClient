@@ -14,19 +14,35 @@ import {
   Redirect
 } from "react-router-dom";
 import { useStateValue } from "./context/AuthContext"
-import { useEffect } from "react"
-import axios from 'axios';
+import { useEffect, useRef,useState } from "react";
+import { fetchPostById } from "../src/ApiCall"
+import { io } from "socket.io-client";
+
 
 function App() {
-  const [{ user}, dispatch] = useStateValue()
+  const [{ user }, dispatch] = useStateValue()
+  const [onlineUsers, setOnlineUsers] = useState([]);
+  const socket = useRef()
   localStorage.setItem("user", JSON.stringify(user))
   useEffect(() => {
-    const userPost = async () => {
-      const res = user&& await axios.get(`/posts/profile/${user.username}`)
-       user && dispatch({ type: "USERS_POSTS", payload: res.data })
-    }
-    userPost()
-  }, [user, dispatch])
+    // to connect the user with socket io
+    socket.current = io("https://socialapi1.herokuapp.com/")
+    dispatch({ type: "SET_SOCKET", payload: socket });
+  }, [])
+
+  useEffect(() => {
+    socket.current.emit("addUser", user?._id)
+    socket.current.on("getUsers", (users) => {
+        setOnlineUsers(
+            user?.followings.filter((f) => users.some((u) => u.userId === f))
+        )
+    })
+    
+}, [user?._id])
+useEffect(() => {
+  dispatch({ type: "SET_ONLINE_USER", payload: onlineUsers});
+},[onlineUsers])
+
 
   return (
     <>
@@ -37,7 +53,7 @@ function App() {
           </Route>
           <Route path="/login">
             {user ? <Redirect to="/" /> : <LoginPage />}
-            </Route>
+          </Route>
           <Route path="/register">
             {user ? <Redirect to="/" /> : <RegisterPage />}
           </Route>
@@ -45,10 +61,10 @@ function App() {
             {user ? <ProfilePage /> : < LoginPage />}
           </Route>
           <Route path="/messenger">
-            {user ? <MessengerPage /> : < LoginPage />}
+            {user ? <MessengerPage socket={socket}/> : < LoginPage />}
           </Route>
           <Route path="/update">
-            <UpdatePage/>
+            <UpdatePage />
           </Route>
         </Switch>
       </Router>

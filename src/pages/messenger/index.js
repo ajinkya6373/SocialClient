@@ -17,34 +17,30 @@ import {
 import { useState, useEffect, useRef } from 'react'
 import { Topbar, Conversetion, Message,OnlineFriend } from '../../components'
 import { useStateValue } from "../../context/AuthContext"
-import { io } from "socket.io-client";
 import {
     fetchConvesation,
     fetchMessages,
-    PostMessage
+    PostMessage,
 } from "../../ApiCall"
-
 
 export default function MessengerPage() {
     const [conversation, setConversetion] = useState([])
     const [currentChat, setCurrentChat] = useState(null)
-    const [message, setMessage] = useState([])
+    const [message, setMessage] = useState(null)
     const [newMessage, setNewMessage] = useState('')
-    const [arrivalMessage, setArrivalMessage] = useState(null);
-    const [onlineUsers, setOnlineUsers] = useState([]);
-    const socket = useRef()
-    const [{user}] = useStateValue()
-    const scrollRef = useRef()
-  
+    const [arrivalMessage, setArrivalMessage] = useState([]);
+    // let [arrivalCount, setArrivalCount] = useState(0);
+    const [{user,socket,onlineUsers}] = useStateValue()
+    const scrollRef = useRef();
 
     //initialization of socket and get message from socket 
     useEffect(() => {
-        socket.current = io("https://socialapi1.herokuapp.com/")
-        socket.current.on("getMessage", (data) => {
+        socket?.current.on("getMessage", (data) => {
             setArrivalMessage({
                 sender: data.senderId,
                 text: data.text,
                 createdAt: Date.now(),
+                conversationId:data.conversationId,
             }) 
         })
     }, [])
@@ -54,7 +50,15 @@ export default function MessengerPage() {
         arrivalMessage &&
           currentChat?.members.includes(arrivalMessage.sender) &&
           setMessage((prev) => [...prev, arrivalMessage]);
+        
       }, [arrivalMessage, currentChat]);
+
+    //   useEffect(()=>{
+    //     // setArrivalCount(arrivalCount+1)
+    //     // console.log(arrivalCount);
+    //     console.log(arrivalMessage);
+    //     // console.log(currentChat);
+    //   },[arrivalMessage])
 
     //fetch all conversation of user
     useEffect(() => {
@@ -62,17 +66,6 @@ export default function MessengerPage() {
             setConversetion(res.data)
         })
     }, [user._id])
-
-    //send user to server and get Online users
-    useEffect(() => {
-        socket.current.emit("addUser", user._id)
-        socket.current.on("getUsers", (users) => {
-            setOnlineUsers(
-                user.followings.filter((f) => users.some((u) => u.userId === f))
-            )
-        })
-       
-    }, [user])
 
     //fetch all messages of currentChat
     useEffect(() => {
@@ -92,17 +85,17 @@ export default function MessengerPage() {
             senderId: user._id,
             receiverId,
             text: newMessage,
+            conversationId:currentChat._id
         });
-        PostMessage(user._id,newMessage,currentChat._id).then((res)=>{
+        PostMessage(user._id,newMessage,receiverId,currentChat._id).then((res)=>{
             setMessage([...message, res.data])
             setNewMessage('')
-        })
-
+        }) 
     }
-
     useEffect(() => {
         scrollRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [message, newMessage]);
+   
     return (
         <>
             <Topbar />
@@ -112,7 +105,12 @@ export default function MessengerPage() {
                         <MenuInput placeholder="Search for friends" />
                         {conversation.map((c) => (
                             <div onClick={() => setCurrentChat(c)} key={c._id}>
-                                <Conversetion conversetion={c} currentUser={user} />
+                                <Conversetion 
+                                conversetion={c} 
+                                currentUser={user} 
+                                currentChat={currentChat} 
+                                arrivalMessage={arrivalMessage}
+                               />
                             </div>
                         )
                         )}
@@ -125,7 +123,7 @@ export default function MessengerPage() {
                                 <ChatBoxTop>
                                     {message.length !== 0 ? message.map((m) => (
                                         <div ref={scrollRef} key={m._id} >
-                                            <Message message={m}  />
+                                            <Message message={m} key={m._id} />
                                         </div>
                                     )) : <Nocoversation> No previous messages  </Nocoversation>
                                     }

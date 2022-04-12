@@ -19,22 +19,36 @@ import {
 import { Search, Person, Chat, Notifications, Cancel } from "@material-ui/icons";
 import { Link } from "react-router-dom"
 import { useStateValue } from "../../context/AuthContext"
-import { SearchContainer } from "../../components"
-import { axiosInstace} from "../../ApiCall";
-import { useState } from "react";
+import { SearchContainer,DisplayNotification } from "../../components"
+import { useState ,useEffect} from "react";
+import axios from "axios"
+import {notificationCount,axiosInstance} from "../../ApiCall"
 
+const CancelToken = axios.CancelToken;
+let source = CancelToken.source();
 export default function Topbar() {
     const [searchInput, setSearchInput] = useState('')
-    const [searchResult, setSearchResult] = useState(null)
-    const [showResult, setShowResult] = useState(false)
+    const [searchResult, setSearchResult] = useState(null);
+    const [showResult, setShowResult] = useState(false);
+    let [messNotification, setMessNotification] = useState(0);
+    // const [notifications, setNotifications] = useState([]);
+    const PF = process.env.REACT_APP_PUBLIC_FOLDER;
+    const [{ user,socket}] = useStateValue()
 
+    useEffect(()=>{
+        notificationCount(user._id).then((res)=>{
+            setMessNotification(res?.data.length);
+        })
+    },[])
+    
     const search = async (e) => {
         setSearchInput(e)
+        source && source.cancel('Operation canceled due to new request.');
+        source = axios.CancelToken.source();
         try {
-
-            let { data, status, message } = await axiosInstace.post('/users/search', { name: searchInput })
-            setSearchInput('')
-            console.log(message)
+            let { data, status} = await axiosInstance.post('/users/search',{ name: searchInput },{
+                cancelToken: source.token
+              })
             if (status === 200) {
                 setSearchResult(data.searchResult)
             }
@@ -46,8 +60,12 @@ export default function Topbar() {
         }
     }
 
-    const PF = process.env.REACT_APP_PUBLIC_FOLDER;
-    const [{ user }] = useStateValue()
+    // useEffect(() => {
+    //     socket?.current.on("getNotification", (data) => {
+    //       setNotifications((prev) => [...prev, data]);
+    //     });
+    //   }, [socket]);
+    // console.log(notifications);
     return (
         <TopbarContainer>
             <TopbarLeft>
@@ -61,6 +79,7 @@ export default function Topbar() {
                     <Input
                         placeholder="Search for friend, post or video"
                         onChange={(e) => search(e.target.value)}
+                        value = {searchInput}
                         onFocus={() => setShowResult(true)}
                     />
                     <SearchIcon onClick={search}>
@@ -85,14 +104,14 @@ export default function Topbar() {
             </TopbarCenter>
             <TopbarRight>
                 <TobarIcons>
-                    <TobarIconItem>
+                    {/* <TobarIconItem>
                         <Person />
                         <TobarIconBadge>1</TobarIconBadge>
-                    </TobarIconItem>
+                    </TobarIconItem> */}
                     <Link to='/messenger' style={{ textDecoration: "none", color: "white" }}>
                         <TobarIconItem >
                             <Chat />
-                            <TobarIconBadge>2</TobarIconBadge>
+                        { messNotification>0 && <TobarIconBadge>{messNotification}</TobarIconBadge> }
                         </TobarIconItem>
                     </Link>
                     <TobarIconItem>
@@ -102,7 +121,7 @@ export default function Topbar() {
                 </TobarIcons>
                 <Link to={`/profile/${user.username}`}>
                     <Image src={user.profilePicture
-                        ? (PF + user.profilePicture)
+                        ?  user.profilePicture.url
                         : (PF + "person/noAvatar.png")} />
                 </Link>
             </TopbarRight>

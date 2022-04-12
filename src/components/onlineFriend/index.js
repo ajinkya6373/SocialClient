@@ -8,7 +8,8 @@ import {
   Name,
 } from './style/onlineFriend'
 import { useEffect, useState } from 'react';
-import { fetchFriends , axiosInstace} from "../../ApiCall"
+import { fetchFriends } from "../../ApiCall"
+import axios from 'axios';
 import { useStateValue } from '../../context/AuthContext';
 
 export default function OnlineFriend({ onlineUsers, setCurrentChat }) {
@@ -29,13 +30,13 @@ export default function OnlineFriend({ onlineUsers, setCurrentChat }) {
   }, [friends, onlineUsers]);
   const handleClick = async (friend) => {
     try {
-      const res = await  axiosInstace.get(
+      const res = await axios.get(
         `/conv/find/${user?._id}/${friend?._id}`
 
       );
       setCurrentChat(res.data);
       if (res.data === null) {
-        const res = await  axiosInstace.post(`/conv/${friend?._id}`, { senderId: user?._id })
+        const res = await axios.post(`/conv/${friend?._id}`, { senderId: user?._id })
         setCurrentChat(res.data);
       }
 
@@ -53,7 +54,7 @@ export default function OnlineFriend({ onlineUsers, setCurrentChat }) {
           <ImgConatainer>
             <Img src={
               o?.profilePicture
-                ? PF + o?.profilePicture
+                ? o.profilePicture.url
                 : PF + "person/noAvatar.png"
             }
             />

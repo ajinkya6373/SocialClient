@@ -26,10 +26,12 @@ import {
     Button
 } from './style/post'
 import { useStateValue } from '../../context/AuthContext';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { useState, useEffect ,useRef} from 'react'
 import { MoreVert } from "@material-ui/icons";
 import { format } from 'timeago.js';
-import { Link } from "react-router-dom"
+import { Link } from "react-router-dom";
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import {
@@ -37,13 +39,12 @@ import {
     LikePost,
     DeletePost,
     UpdatePost,
-    axiosInstace
 } from "../../ApiCall"
 
 export default function Post({ post }) {
-    const [{ user: currentUser }, dispatch] = useStateValue();
+    const [{ user: currentUser ,socket}, dispatch] = useStateValue();
     const [like, setLike] = useState(post.likes.length)
-    const [isliked, setIsLiked] = useState(false)
+    const [isliked, setIsLiked] = useState(false);
     const [edit, setEdit] = useState(false)
     const updateDes = useRef()
     const PF = process.env.REACT_APP_PUBLIC_FOLDER;
@@ -52,26 +53,40 @@ export default function Post({ post }) {
     useEffect(() => {
         setIsLiked(post.likes.includes(currentUser._id))
     }, [post.likes, currentUser._id])
-
     useEffect(() => {
           fetchUserById(post.userId).then((res)=>
           setUser(res.data)
           )
     }, [post.userId])
-    const likeHandler = () => {
+    const likeHandler = (type) => {
         setLike(isliked ? like - 1 : like + 1)
         setIsLiked(!isliked);
-        LikePost(post._id,currentUser._id)
+        LikePost(post._id,currentUser._id).then((res)=>{
+            if(res.status ==200) {
+                toast.success(res.data);
+            }else{
+                toast.error(res.data);
+            }
+        })
+        // socket?.current.emit("sendNotification", {
+        //     senderId:currentUser._id,
+        //     receiverId: post.userId,
+        //     type,
+        //   });
     }
 
-    const deletePost =  async() => {
-        await  axiosInstace.post('/deleteImage',{postName:post.img})
-        DeletePost(post._id,currentUser._id ,dispatch,post.img)
-        window.location.reload();
+    const deletePost = () => {
+        DeletePost(post._id,currentUser._id ,dispatch,post.img);
     }
 
     const updatePost = () => {
-        UpdatePost(currentUser._id,updateDes.current.value,post._id,)
+        UpdatePost(currentUser._id,updateDes.current.value,post._id,dispatch).then((res)=>{
+            if(res.status ==200) {
+                toast.success(res.data);
+            }else{
+                toast.error(res.data);
+            }
+        })
         setEdit(false);
     }
     return (
@@ -80,7 +95,7 @@ export default function Post({ post }) {
                 <PostTop>
                     <PostTopLeft>
                         <Link to={`/profile/${user?.username}`}>
-                            <UserProfile src={PF + (user?.profilePicture ? user?.profilePicture : "person/noAvatar.png")} />
+                            <UserProfile src={user.profilePicture ? user.profilePicture.url : PF+ "person/noAvatar.png"} />
                         </Link>
                         <UserName>{user?.username}</UserName>
                         <DateOfPost>{format(post.createdAt)}</DateOfPost>
@@ -107,12 +122,12 @@ export default function Post({ post }) {
                 </PostTop>
                 <PostCenter>
                     <Description>{post?.desc}</Description>
-                    <PostImage src={PF + post.img} />
+                    <PostImage src={post.img.url} loading="lazy"/>
                 </PostCenter>
                 <PostBottom>
                     <PostBottomLeft>
-                        <LikeIcon src={`${PF}like.png`} onClick={likeHandler} />
-                        <LikeIcon src={`${PF}heart.png`} onClick={likeHandler} />
+                        <LikeIcon src={`${PF}like.png`} onClick={()=>likeHandler(1)} />
+                        <LikeIcon src={`${PF}heart.png`} onClick={()=>likeHandler(1)} />
                         <PostLikeCounter>{like} people like it</PostLikeCounter>
                     </PostBottomLeft>
                     <PostBottomRight>
@@ -120,7 +135,8 @@ export default function Post({ post }) {
                     </PostBottomRight>
                 </PostBottom>
             </Wrapper>
+            <ToastContainer />
         </PostContainer>
-
+        
     )
 }

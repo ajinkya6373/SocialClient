@@ -1,79 +1,144 @@
 
-
- const AuthReducer=(state,action)=> {
+const AuthReducer = (state, action) => {
     switch (action.type) {
         case "LOGIN_START":
-            return{
-                user:null,
-                isFetching:true,
-                error:false,
+            return {
+                user: null,
+                isFetching: true,
+                error: false,
             }
         case "LOGIN_SUCCESS":
-            return{
-                user:action.payload,
-                isFetching:false,
-                error:false,
+            return {
+                user: action.payload,
+                isFetching: false,
+                error: false,
             }
         case "LOGIN_FAILURE":
-            return{
-                user:null,
-                isFetching:false,
-                error:true,
+            return {
+                user: null,
+                isFetching: false,
+                error: true,
             }
         case "LOG_OUT":
-            return{
-                user:null,
-                isFetching:false,
-                error:false,
+            return {
+                user: null,
+                isFetching: false,
+                error: false,
             }
-        case "UPDATE_USER":
+        case "SET_POSTS":
+            return {
+                ...state,
+                posts: action.payload,
+            }
+        case "SETTING_TIMELINE":
+            return {
+                ...state,
+                settingTimeline:true,
+            }
+        case "SET_TIMELINE":
+            return {
+                ...state,
+                timeLine: action.payload,
+                settingTimeline:false,
+            }
+        case "DELETING_POST":
             return{
                 ...state,
-                user:action.payload,
+                deletePost:true,
+            }
+        case "DELETE_POST":
+            return {
+                ...state,
+                timeLine: state.timeLine.filter((i) => i._id !== action.payload),
+                deletePost:false,
+            }
+        case "ADDING_POST":
+            return {
+            ...state,
+            addingPost:true
+        }
+        case "ADD_POST":
+            return {
+                ...state,
+                timeLine: [action.payload,...state.timeLine],
+                addingPost:false,
+            }
+        case "UPDATING_POST":
+            return{
+                ...state,
+                updatingPost:true
+            }
+        case "UPDATE_POST":
+            let FindPost = state.timeLine.find((i) =>i._id===action.payload.postId);
+            const {desc,...other} =FindPost;
+            let updatedPost ={...other,...action.payload};
+            const{ postId,...newData} =updatedPost;
+            let newPosts = [];
+            state.timeLine.map((i)=>{
+                if(i._id ===action.payload.postId){
+                    newPosts.push(newData);
+                }else{
+                    newPosts.push(i);
+                }
+                return newPosts;
+            })
+            return {
+                ...state,
+                updatingPost:false,
+                timeLine: newPosts,
+            }
+        case "UPDATE_USER":
+            return {
+                ...state,
+                user: action.payload,
 
             }
         case "UPDATE_PROFILE":
-            return{
+            return {
                 ...state,
-                user:{
+                user: {
                     ...state.user,
-                    profilePicture:action.payload,
+                    profilePicture: action.payload,
                 }
-
-
+            }
+        case "UPDATE_COVERPIC":
+            return {
+                ...state,
+                user: {
+                    ...state.user,
+                    coverPicture: action.payload,
+                }
             }
         case "FOLLOW":
-            return{
+            return {
                 ...state,
-                user:{
+                user: {
                     ...state.user,
-                    followings:[...state.user.followings,action.payload]
+                    followings: [...state.user.followings, action.payload]
 
                 }
             }
         case "UNFOLLOW":
-            return{
+            return {
                 ...state,
-                user:{
+                user: {
                     ...state.user,
-                    followings:state.user.followings.filter((following)=>following!==action.payload)
+                    followings: state.user.followings.filter((following) => following !== action.payload)
                 }
             }
-        case "USERS_POSTS":
-            return{
+        case "SET_SOCKET":
+            return {
                 ...state,
-                post:action.payload
+                socket:action.payload,
             }
-        case "DELETE_POST":
-            return{
+        case "SET_ONLINE_USER":
+            return {
                 ...state,
-                post:state.post.filter((i)=>i._id!==action.payload._id)
+                onlineUsers:action.payload,
             }
-
-        
         default:
             return state;
-    }   
+    }
 }
 
-export default AuthReducer ;
+export default AuthReducer;

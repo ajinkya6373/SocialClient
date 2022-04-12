@@ -15,9 +15,6 @@ flex:3.5;
 export const MenuWrapper = styled.div`
     padding: 10px;
     height: 100%;
-    @media (max-width: 768px) {
-        padding: 10px 2px;
-      }
 `
 export const MenuInput = styled.input`
     width: 90%;
@@ -49,7 +46,6 @@ export const ChatBoxTop=styled.div`
     &::-webkit-scrollbar-thumb {
         background-color: rgb(179, 179, 179);
       }
-      
 `
 export const ChatBoxBottom=styled.div`
 

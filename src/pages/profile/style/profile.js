@@ -1,8 +1,11 @@
 
 import styled from "styled-components/macro";
 export const Profile = styled.div`
-    display:flex;
+    // display:flex;
     position:relative;
+    // display: flex;
+    
+    // border:2px solid red;
 `
 export const ProfileRight = styled.div`
     flex: 9;
@@ -32,6 +35,7 @@ export const ProfileImage = styled.img`
     top: 150px;
     border: 3px solid white;
     cursor:pointer;
+    background-color: white;
 `
 export const ProfileWrapper = styled.label``
 export const Meta = styled.div`
@@ -78,11 +82,19 @@ export const Description = styled.span`
     font-weight: 300;
 `
 export const ProfileRightBottom = styled.div`
-    display: flex;
+    display: flex;  
+    // align-items: center;
+    justify-content: center;
 `
 export const Setting = styled.div`
     position:absolute;
     right:8px;
-    z-index: 1000;
+    z-index: 1;
     top: 254px;
+`
+export const SetCoverpic = styled.label`
+    position:absolute;
+    right:8px;
+    z-index: 1;
+    top: 7px;
 `

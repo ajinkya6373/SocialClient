@@ -25,7 +25,6 @@ height: 32px;
 border-radius: 50%;
 object-fit: cover;
 margin-right: 10px;
-
 `
 
 export  const Bottom= styled.div`
