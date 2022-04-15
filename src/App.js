@@ -26,7 +26,7 @@ function App() {
   localStorage.setItem("user", JSON.stringify(user))
   useEffect(() => {
     // to connect the user with socket io
-    socket.current = io("https://socialapi1.herokuapp.com/")
+    socket.current = io("https://socialApi.ajinkya6373.repl.co")
     dispatch({ type: "SET_SOCKET", payload: socket });
   }, [])
 
