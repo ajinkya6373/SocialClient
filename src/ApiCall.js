@@ -2,7 +2,7 @@
 import axios from "axios";
 
 export const axiosInstance = axios.create({
-    baseURL : "https://socialapi1.herokuapp.com/api"
+    baseURL : "https://socialApi.ajinkya6373.repl.co"
 })
 
 export const loginCall = async (userCredential,dispatch) => {
