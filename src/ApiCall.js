@@ -2,7 +2,7 @@
 import axios from "axios";
 
 export const axiosInstance = axios.create({
-    baseURL : "https://socialApi.ajinkya6373.repl.co"
+    baseURL : "https://socialApi.ajinkya6373.repl.co/api"
 })
 
 export const loginCall = async (userCredential,dispatch) => {
