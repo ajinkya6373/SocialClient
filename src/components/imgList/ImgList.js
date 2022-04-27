@@ -119,7 +119,7 @@ export default function StandardImageList({ username, currentUser }) {
             <Text >
               {post?.desc}
               <Divider />
-              {  commentList.length >0 ? commentList?.map((c) => {
+              {  commentList?.length >0 ? commentList?.map((c) => {
                   return <div ref={scrollRef} key={c._id+c.text} >
                     <CommentBox data={c} setCommentId={setCommentId} />
                   </div>
